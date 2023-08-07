@@ -59,7 +59,21 @@ bot = commands.InteractionBot()
 
 @bot.slash_command()
 async def timestamp(inter: disnake.AppCmdInter):
+    pass
+
+@timestamp.sub_command()
+async def now(inter: disnake.AppCmdInter):
     t = int(time.time()) - (int(time.time()) % 3600) + 3600
+    await inter.response.send_message(f"<t:{t}>", view=TimerView(), ephemeral=True)
+
+@timestamp.sub_command()
+async def in_(inter: disnake.AppCmdInter, days: int = 0, hours: int = 0, minutes: int = 0, round: bool = True):
+    t = time.time()
+    if round:
+        t = int(time.time()) - (int(time.time()) % 3600) + 3600
+    t = int(t) + (days * day) + (hours * hour)
+    if not round:
+        t += minutes * minute
     await inter.response.send_message(f"<t:{t}>", view=TimerView(), ephemeral=True)
 
 @bot.event
