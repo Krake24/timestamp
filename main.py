@@ -2,6 +2,7 @@
 import os
 import disnake
 import time
+from datetime import datetime
 from disnake.ext import commands
 from timer import timer 
 
@@ -28,23 +29,37 @@ def addMinute(int):
 def subtractMinute(int):
     return int - minute
 
+class PrintButton(disnake.ui.Button):
+
+    def __init__(self, label, timestamp, time_format):
+        super().__init__(
+            style=disnake.ButtonStyle.primary,
+            label=label
+        )
+        self.timestamp=timestamp
+        self.time_format=time_format
+    
+    async def callback(self, inter: disnake.MessageInteraction):
+        await inter.response.send_message(f"`<t:{self.timestamp}:{self.time_format}>`", ephemeral=True)
+
+class PrintView(disnake.ui.View):
+     def __init__(self, timestamp: int):
+        super().__init__()
+        self.add_item(PrintButton("Time only", timestamp, "t"))
+        self.add_item(PrintButton("Date and Time", timestamp, "F"))
+        self.add_item(PrintButton("Countdown", timestamp, "R"))
 
 class Print(disnake.ui.Button):
-
     def __init__(self):
         super().__init__(
             style=disnake.ButtonStyle.success,
-            label="Print"
+            label="Continue"
         )
     
     async def callback(self, inter: disnake.MessageInteraction):
-        message=""
         timestamp = int(inter.message.content.replace("<t:","").replace(">",""))
-        formats="tTdDfFR"
-        for format in formats:
-            message += f"<t:{timestamp}:{format}> ```<t:{timestamp}:{format}>```\n" 
-
-        await inter.response.send_message(message, ephemeral=True)
+        self.disabled=True
+        await inter.response.send_message("Pick a time", view=PrintView(timestamp), ephemeral=True)
 
 class TimerView(disnake.ui.View):
     def __init__(self, round_to_hour: bool = True):
