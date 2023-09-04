@@ -42,7 +42,7 @@ class Print(disnake.ui.Button):
         timestamp = int(inter.message.content.replace("<t:","").replace(">",""))
         formats="tTdDfFR"
         for format in formats:
-            message += f"`<t:{timestamp}:{format}>` => <t:{timestamp}:{format}>\n" 
+            message += f"<t:{timestamp}:{format}> ```<t:{timestamp}:{format}>```\n" 
 
         await inter.response.send_message(message, ephemeral=True)
 
